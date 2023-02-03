@@ -27,7 +27,7 @@ function start(func, options) {
 
   // Create the server
   const { logLevel = LOG_LEVEL, port = PORT } = { ...options };
-  const server = fastify({ logger: { level: logLevel } });
+  const server = fastify({forceCloseConnections: true});
 
   server.addContentTypeParser('application/x-www-form-urlencoded',
     function(_, payload, done) {
@@ -60,6 +60,14 @@ function start(func, options) {
     req.fcontext = new Context(req);
     done();
   });
+  
+  server.addHook('onRequest', async(request, _) => {
+    request.raw.on('close', () => {
+      if (request.raw.destroyed) {
+        app.log.info('request closed');
+      }
+    });
+  });
 
   // Evaluates the incoming request, parsing any CloudEvents and attaching
   // to the request's `fcontext`
@@ -68,6 +76,7 @@ function start(func, options) {
   // Configures the server to handle incoming requests to the function itself,
   // and also to other endpoints such as telemetry and liveness/readiness
   requestHandler(server, { func, funcConfig });
+
 
   return new Promise((resolve, reject) => {
     server.listen({
