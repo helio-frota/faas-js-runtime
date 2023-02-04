@@ -5,7 +5,8 @@ const { start, defaults } = require('../');
 const { loadFunction } = require('../lib/function-loader.js');
 const pkg = require('../package.json');
 
-const ON_DEATH = require('death')({ uncaughtException: true });
+
+const exitHook = require('exit-hook');
 const { Command } = require('commander');
 
 const program = new Command();
@@ -40,7 +41,7 @@ async function runServer(file) {
       console.error(code);
       throw TypeError(`Cannot find Invokable function 'handle' in ${code}`);
     }
-    ON_DEATH(_ => {
+    exitHook(_ => {
       server.close();
     });
   } catch (error) {

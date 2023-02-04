@@ -27,7 +27,7 @@ function start(func, options) {
 
   // Create the server
   const { logLevel = LOG_LEVEL, port = PORT } = { ...options };
-  const server = fastify({ logger: { level: logLevel } });
+  const server = fastify({ logger: { level: logLevel }, forceCloseConnections: false });
 
   server.addContentTypeParser('application/x-www-form-urlencoded',
     function(_, payload, done) {
