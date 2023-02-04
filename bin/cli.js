@@ -5,7 +5,7 @@ const { start, defaults } = require('../');
 const { loadFunction } = require('../lib/function-loader.js');
 const pkg = require('../package.json');
 
-const ON_DEATH = require('death')({ uncaughtException: true });
+const ON_DEATH = require('death')({ debug: true, uncaughtException: true });
 const { Command } = require('commander');
 
 const program = new Command();
